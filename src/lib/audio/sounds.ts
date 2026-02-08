@@ -55,40 +55,54 @@ function playPickup(): void {
   src.stop(t + 0.15);
 }
 
-/** Short click/clack — a stone landing in a pit. dropIndex varies pitch. */
+/** Glass gem clink — a stone landing in a pit. dropIndex varies pitch. */
 function playDrop(dropIndex: number = 0): void {
   if (muted) return;
   const ac = getContext();
   const t = ac.currentTime;
 
-  // Base frequency varies slightly per drop for naturalness
-  const baseFreq = 900 + (dropIndex % 6) * 80 + Math.random() * 60;
+  // Glass-on-glass clink: higher pitched, sharper attack
+  const baseFreq = 1800 + (dropIndex % 6) * 120 + Math.random() * 100;
 
+  // Primary tone — bright sine for glass ring
   const osc = ac.createOscillator();
-  osc.type = 'triangle';
+  osc.type = 'sine';
   osc.frequency.setValueAtTime(baseFreq, t);
-  osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, t + 0.06);
+  osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, t + 0.08);
 
   const gain = ac.createGain();
-  gain.gain.setValueAtTime(0.18, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+  gain.gain.setValueAtTime(0.22, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
 
-  // Tiny noise layer for texture
-  const nSrc = noise(ac, 0.03);
+  // Secondary harmonic for glass shimmer
+  const osc2 = ac.createOscillator();
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(baseFreq * 2.2, t);
+  osc2.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, t + 0.05);
+
+  const gain2 = ac.createGain();
+  gain2.gain.setValueAtTime(0.08, t);
+  gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+  // Tiny click transient for impact
+  const nSrc = noise(ac, 0.015);
   const nGain = ac.createGain();
-  nGain.gain.setValueAtTime(0.06, t);
-  nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+  nGain.gain.setValueAtTime(0.1, t);
+  nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
   const hp = ac.createBiquadFilter();
   hp.type = 'highpass';
-  hp.frequency.value = 2000;
+  hp.frequency.value = 3000;
 
   osc.connect(gain).connect(ac.destination);
+  osc2.connect(gain2).connect(ac.destination);
   nSrc.connect(hp).connect(nGain).connect(ac.destination);
 
   osc.start(t);
-  osc.stop(t + 0.08);
+  osc.stop(t + 0.1);
+  osc2.start(t);
+  osc2.stop(t + 0.06);
   nSrc.start(t);
-  nSrc.stop(t + 0.03);
+  nSrc.stop(t + 0.015);
 }
 
 /** Deeper thud with scrape — stones captured */
