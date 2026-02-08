@@ -88,16 +88,18 @@ function createGameState() {
     // Phase 1: Scoop - empty the source pit
     audio.playPickup();
     board = board.map((v, i) => i === pitIndex ? 0 : v);
-    await delay(200);
+    await delay(350);
 
     // Phase 2: Distribute one stone at a time
+    // Paced like a real hand moving pit-to-pit: deliberate, not rushed
     let tempBoard = [...board];
     for (let i = 0; i < path.length; i++) {
       tempBoard = [...tempBoard];
       tempBoard[path[i]] = (tempBoard[path[i]] || 0) + 1;
       board = tempBoard;
       audio.playDrop(i);
-      await delay(150);
+      // ~350ms base with slight variation so it feels human, not robotic
+      await delay(320 + Math.random() * 80);
     }
 
     // Phase 3: If capture, animate it

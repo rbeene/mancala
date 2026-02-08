@@ -55,54 +55,65 @@ function playPickup(): void {
   src.stop(t + 0.15);
 }
 
-/** Glass gem clink — a stone landing in a pit. dropIndex varies pitch. */
+/** Glass gem dropping into a wooden pit — weighty clink with settle. */
 function playDrop(dropIndex: number = 0): void {
   if (muted) return;
   const ac = getContext();
   const t = ac.currentTime;
 
-  // Glass-on-glass clink: higher pitched, sharper attack
-  const baseFreq = 1800 + (dropIndex % 6) * 120 + Math.random() * 100;
+  // Vary pitch slightly per drop so each sounds unique
+  const pitchVar = (dropIndex % 5) * 30 + Math.random() * 40;
 
-  // Primary tone — bright sine for glass ring
-  const osc = ac.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(baseFreq, t);
-  osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, t + 0.08);
+  // 1. Impact thud — the gem hitting the wooden bowl
+  const thud = ac.createOscillator();
+  thud.type = 'sine';
+  thud.frequency.setValueAtTime(280 + pitchVar * 0.3, t);
+  thud.frequency.exponentialRampToValueAtTime(120, t + 0.1);
+  const thudGain = ac.createGain();
+  thudGain.gain.setValueAtTime(0.18, t);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
 
-  const gain = ac.createGain();
-  gain.gain.setValueAtTime(0.22, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  // 2. Glass clink — mid-range ring as gem touches other gems
+  const clink = ac.createOscillator();
+  clink.type = 'sine';
+  clink.frequency.setValueAtTime(800 + pitchVar, t);
+  clink.frequency.exponentialRampToValueAtTime(500 + pitchVar * 0.5, t + 0.15);
+  const clinkGain = ac.createGain();
+  clinkGain.gain.setValueAtTime(0.14, t);
+  clinkGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
 
-  // Secondary harmonic for glass shimmer
-  const osc2 = ac.createOscillator();
-  osc2.type = 'sine';
-  osc2.frequency.setValueAtTime(baseFreq * 2.2, t);
-  osc2.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, t + 0.05);
+  // 3. Brief high shimmer — glass overtone
+  const shimmer = ac.createOscillator();
+  shimmer.type = 'sine';
+  shimmer.frequency.setValueAtTime(1600 + pitchVar * 2, t);
+  shimmer.frequency.exponentialRampToValueAtTime(1200 + pitchVar, t + 0.06);
+  const shimGain = ac.createGain();
+  shimGain.gain.setValueAtTime(0.04, t);
+  shimGain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
 
-  const gain2 = ac.createGain();
-  gain2.gain.setValueAtTime(0.08, t);
-  gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-
-  // Tiny click transient for impact
-  const nSrc = noise(ac, 0.015);
+  // 4. Transient click — initial contact
+  const nSrc = noise(ac, 0.02);
   const nGain = ac.createGain();
-  nGain.gain.setValueAtTime(0.1, t);
-  nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
-  const hp = ac.createBiquadFilter();
-  hp.type = 'highpass';
-  hp.frequency.value = 3000;
+  nGain.gain.setValueAtTime(0.12, t);
+  nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+  const bp = ac.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = 1200;
+  bp.Q.value = 1.5;
 
-  osc.connect(gain).connect(ac.destination);
-  osc2.connect(gain2).connect(ac.destination);
-  nSrc.connect(hp).connect(nGain).connect(ac.destination);
+  thud.connect(thudGain).connect(ac.destination);
+  clink.connect(clinkGain).connect(ac.destination);
+  shimmer.connect(shimGain).connect(ac.destination);
+  nSrc.connect(bp).connect(nGain).connect(ac.destination);
 
-  osc.start(t);
-  osc.stop(t + 0.1);
-  osc2.start(t);
-  osc2.stop(t + 0.06);
+  thud.start(t);
+  thud.stop(t + 0.12);
+  clink.start(t);
+  clink.stop(t + 0.18);
+  shimmer.start(t);
+  shimmer.stop(t + 0.08);
   nSrc.start(t);
-  nSrc.stop(t + 0.015);
+  nSrc.stop(t + 0.02);
 }
 
 /** Deeper thud with scrape — stones captured */
