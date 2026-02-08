@@ -58,15 +58,18 @@
     if (isStore) visualCount = Math.min(visualCount + 1, 20);
 
     // Larger flat oval gems — ±15% size variation
-    const baseRx = isStore ? 18 : 18;
-    const baseRy = isStore ? 14 : 14;
-    const spread = Math.min(8 + count * 1.8, isStore ? 32 : 26);
+    const baseRx = isStore ? 17 : 17;
+    const baseRy = isStore ? 13 : 13;
+    const maxSpread = isStore ? 38 : 32;
+    const spread = Math.min(12 + count * 2.5, maxSpread);
 
     const result: Gem[] = [];
     for (let i = 0; i < visualCount; i++) {
       const palette = gemPalette[Math.floor(rng() * gemPalette.length)];
       const angle = rng() * Math.PI * 2;
-      const dist = rng() * spread;
+      // Minimum distance from center so gems spread out rather than clump
+      const minDist = count <= 2 ? 0 : spread * 0.25;
+      const dist = minDist + rng() * (spread - minDist);
       const rx = baseRx * (0.88 + rng() * 0.24);
       const ry = baseRy * (0.88 + rng() * 0.24);
       result.push({
@@ -95,8 +98,8 @@
 {#if count > 0}
   <div
     class="stone-pile"
-    style:width="{Math.max(pileSize, 75)}%"
-    style:height="{Math.max(pileSize, 75)}%"
+    style:width="{Math.max(pileSize, 85)}%"
+    style:height="{Math.max(pileSize, 85)}%"
     style:transform="translate(-50%, -50%)"
     aria-hidden="true"
   >
