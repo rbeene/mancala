@@ -10,7 +10,7 @@
     };
   }
 
-  const stoneColors = ['#8B7355', '#6B6B6B', '#A0926B', '#7A6E5D', '#9C8E7C'];
+  const stoneColors = ['#C4A46C', '#B8A080', '#D4B87A', '#A89070', '#CCBB92'];
 
   interface Blob {
     x: number;
@@ -47,7 +47,7 @@
         rx: 8 + rng() * 14,
         ry: 6 + rng() * 12,
         color: stoneColors[Math.floor(rng() * stoneColors.length)],
-        opacity: 0.4 + rng() * 0.4,
+        opacity: 0.6 + rng() * 0.4,
         rotation: rng() * 360,
       });
     }
@@ -61,13 +61,13 @@
   });
 
   let blurRadius = $derived.by(() => {
-    if (count <= 2) return 1.5;
-    if (count <= 4) return 2;
-    if (count <= 6) return 2.5;
-    if (count <= 9) return 3;
-    if (count <= 14) return 3.5;
-    if (count <= 24) return 4;
-    return 4.5;
+    if (count <= 2) return 0.5;
+    if (count <= 4) return 0.8;
+    if (count <= 6) return 1;
+    if (count <= 9) return 1.2;
+    if (count <= 14) return 1.5;
+    if (count <= 24) return 1.8;
+    return 2;
   });
 
   let elevation = $derived(Math.min(count * 0.3, 8));
@@ -76,10 +76,10 @@
 {#if count > 0}
   <div
     class="stone-pile"
-    style:width="{Math.max(pileSize, 25)}%"
-    style:height="{Math.max(pileSize, 25)}%"
+    style:width="{Math.max(pileSize, 40)}%"
+    style:height="{Math.max(pileSize, 40)}%"
     style:filter="blur({blurRadius}px)"
-    style:transform="translateY(-{elevation}px)"
+    style:transform="translate(-50%, -50%) translateY(-{elevation}px)"
     style:box-shadow="0 {elevation}px {elevation * 0.5}px rgba(0, 0, 0, 0.3)"
     aria-hidden="true"
   >
@@ -104,7 +104,6 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     border-radius: 50%;
     transition: width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
                 height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
