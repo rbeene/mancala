@@ -9,15 +9,19 @@
     };
   }
 
-  // Glass gem colors inspired by real mancala stones — varied teal/blue/green
+  // Varied glass gem colors — mixed hues so individual stones are distinguishable
   const gemPalette = [
     { fill: '#1A8C7A', mid: '#28A890', highlight: '#7EECD8', edge: '#0F6858' },  // teal
     { fill: '#1E7A8C', mid: '#2A96A8', highlight: '#80D8EC', edge: '#125868' },  // blue-teal
     { fill: '#2A7860', mid: '#38946E', highlight: '#7AE0B0', edge: '#1A5840' },  // green
-    { fill: '#187888', mid: '#2494A0', highlight: '#78D6E8', edge: '#105868' },  // deep teal
+    { fill: '#B8862A', mid: '#D4A040', highlight: '#F0D888', edge: '#8A6418' },  // amber
+    { fill: '#8C2A2A', mid: '#A83838', highlight: '#E88080', edge: '#681818' },  // ruby
+    { fill: '#6A3D8C', mid: '#8458A8', highlight: '#C8A0E8', edge: '#4A2868' },  // amethyst
+    { fill: '#2A5C8C', mid: '#3878A8', highlight: '#80B8E8', edge: '#183C68' },  // cobalt
+    { fill: '#8C6A2A', mid: '#A88438', highlight: '#E8C878', edge: '#684A18' },  // topaz
     { fill: '#248868', mid: '#30A47C', highlight: '#80E8C0', edge: '#186850' },  // emerald
     { fill: '#1A7080', mid: '#268C98', highlight: '#74D0E0', edge: '#125060' },  // ocean
-    { fill: '#207868', mid: '#2C9480', highlight: '#78DCC4', edge: '#145848' },  // jade
+    { fill: '#8C3A5A', mid: '#A84870', highlight: '#E890B0', edge: '#682840' },  // rose
     { fill: '#1C8878', mid: '#28A48E', highlight: '#7CE8D0', edge: '#106858' },  // seafoam
   ];
 
@@ -42,23 +46,21 @@
     const seed = pitIndex * 1000 + count * 7 + 42;
     const rng = seededRandom(seed);
 
-    // Visual count: fewer than actual — occlusion is why you can't count
+    // Show close to real count — overlap/occlusion makes exact counting hard
     let visualCount: number;
-    if (count <= 2) visualCount = count;
-    else if (count <= 4) visualCount = 2 + Math.floor(rng() * 2);
-    else if (count <= 6) visualCount = 3 + Math.floor(rng() * 2);
-    else if (count <= 8) visualCount = 4 + Math.floor(rng() * 2);
-    else if (count <= 12) visualCount = 5 + Math.floor(rng() * 2);
-    else if (count <= 18) visualCount = 6 + Math.floor(rng() * 2);
-    else if (count <= 24) visualCount = 7 + Math.floor(rng() * 2);
-    else visualCount = 8 + Math.floor(rng() * 3);
+    if (count <= 3) visualCount = count;
+    else if (count <= 6) visualCount = count - Math.floor(rng() * 2);
+    else if (count <= 10) visualCount = count - 1 - Math.floor(rng() * 2);
+    else if (count <= 16) visualCount = count - 2 - Math.floor(rng() * 3);
+    else if (count <= 24) visualCount = count - 3 - Math.floor(rng() * 3);
+    else visualCount = Math.min(count - 4, 18);
 
-    if (isStore) visualCount = Math.min(visualCount + 2, 14);
+    if (isStore) visualCount = Math.min(visualCount + 1, 20);
 
-    // Gems are flat oval glass — similar size, ±12% variation
-    const baseRx = isStore ? 16 : 15;
-    const baseRy = isStore ? 13 : 12;
-    const spread = Math.min(10 + count * 2, isStore ? 30 : 24);
+    // Larger flat oval gems — ±15% size variation
+    const baseRx = isStore ? 18 : 18;
+    const baseRy = isStore ? 14 : 14;
+    const spread = Math.min(8 + count * 1.8, isStore ? 32 : 26);
 
     const result: Gem[] = [];
     for (let i = 0; i < visualCount; i++) {
@@ -93,8 +95,8 @@
 {#if count > 0}
   <div
     class="stone-pile"
-    style:width="{Math.max(pileSize, 65)}%"
-    style:height="{Math.max(pileSize, 65)}%"
+    style:width="{Math.max(pileSize, 75)}%"
+    style:height="{Math.max(pileSize, 75)}%"
     style:transform="translate(-50%, -50%)"
     aria-hidden="true"
   >
