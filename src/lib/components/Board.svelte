@@ -15,6 +15,60 @@
   function isP2PitClickable(index: number): boolean {
     return game.currentPlayer === 1 && game.canClickPit(index);
   }
+
+  // Approximate percentage positions for each pit within the .board element.
+  // Stores are at the far edges; pits are evenly spaced in two rows.
+  // X: stores ~5% and ~95%; pits span ~15% to ~85% across 6 positions
+  // Y: top row ~32%, bottom row ~68%; stores ~50%
+  function pitPosition(pitIndex: number): { left: number; top: number } {
+    // P1 pits: indices 0-5, bottom row
+    if (pitIndex >= 0 && pitIndex <= 5) {
+      const x = 15 + (pitIndex / 5) * 70; // 15% to 85%
+      return { left: x, top: 68 };
+    }
+    // P1 store: index 6, right side
+    if (pitIndex === 6) {
+      return { left: 95, top: 50 };
+    }
+    // P2 pits: indices 7-12, top row (displayed 12..7 left-to-right, so index 12 is leftmost)
+    if (pitIndex >= 7 && pitIndex <= 12) {
+      const displayPos = 12 - pitIndex; // 12→0, 11→1, ..., 7→5
+      const x = 15 + (displayPos / 5) * 70;
+      return { left: x, top: 32 };
+    }
+    // P2 store: index 13, left side
+    return { left: 5, top: 50 };
+  }
+
+  // Two-step animation: render at fromPit first, then animate to toPit on next frame
+  let stoneLeft = $state(0);
+  let stoneTop = $state(0);
+  let stoneVisible = $state(false);
+  let animating = $state(false);
+
+  $effect(() => {
+    const stone = game.flyingStone;
+    if (stone.active) {
+      // Step 1: position at source immediately (no transition)
+      const from = pitPosition(stone.fromPit);
+      animating = false;
+      stoneLeft = from.left;
+      stoneTop = from.top;
+      stoneVisible = true;
+
+      // Step 2: on next frame, move to target (with transition)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const to = pitPosition(stone.toPit);
+          animating = true;
+          stoneLeft = to.left;
+          stoneTop = to.top;
+        });
+      });
+    } else {
+      stoneVisible = false;
+    }
+  });
 </script>
 
 <div class="board-wrapper">
@@ -78,6 +132,41 @@
       <div class="store-right">
         <Store player={0} count={game.board[6]} pitIndex={6} />
       </div>
+
+      {#if stoneVisible}
+        <div
+          class="flying-stone"
+          class:animating
+          style:left="{stoneLeft}%"
+          style:top="{stoneTop}%"
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg" width="36" height="28">
+            <defs>
+              <radialGradient id="flying-gem-grad" cx="40%" cy="35%" r="60%" fx="35%" fy="30%">
+                <stop offset="0%" stop-color={game.flyingStone.gemColor.mid} />
+                <stop offset="50%" stop-color={game.flyingStone.gemColor.fill} />
+                <stop offset="100%" stop-color={game.flyingStone.gemColor.edge} />
+              </radialGradient>
+              <filter id="flying-gem-shadow" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.5)" />
+              </filter>
+            </defs>
+            <ellipse
+              cx="20" cy="15" rx="16" ry="12"
+              fill="url(#flying-gem-grad)"
+              stroke={game.flyingStone.gemColor.edge}
+              stroke-width="0.8"
+              filter="url(#flying-gem-shadow)"
+            />
+            <ellipse
+              cx="16" cy="11" rx="6" ry="3.5"
+              fill={game.flyingStone.gemColor.highlight}
+              opacity="0.6"
+            />
+          </svg>
+        </div>
+      {/if}
 
       {#if game.extraTurnMessage}
         <div class="extra-turn-banner" role="alert">
@@ -223,6 +312,19 @@
 
   .pit-row.active.top-row {
     box-shadow: 0 0 20px 4px rgba(91, 139, 212, 0.08);
+  }
+
+  .flying-stone {
+    position: absolute;
+    z-index: 40;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    will-change: left, top;
+  }
+
+  .flying-stone.animating {
+    transition: left 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+                top 0.22s cubic-bezier(0.4, 0, 0.2, 1.4);
   }
 
   .extra-turn-banner {

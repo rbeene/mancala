@@ -40,50 +40,52 @@
     id: string;
   }
 
+  // Generate a stable gem for a given stone index — position depends only on
+  // pitIndex and stoneIndex, so adding/removing stones doesn't rearrange others.
+  function gemForIndex(stoneIndex: number, spread: number, stoneCount: number): Gem {
+    const rng = seededRandom(pitIndex * 1000 + stoneIndex * 13 + 42);
+    const palette = gemPalette[Math.floor(rng() * gemPalette.length)];
+    const angle = rng() * Math.PI * 2;
+    const minDist = stoneCount <= 2 ? 0 : spread * 0.25;
+    const dist = minDist + rng() * (spread - minDist);
+    const baseRx = 17;
+    const baseRy = 13;
+    const rx = baseRx * (0.88 + rng() * 0.24);
+    const ry = baseRy * (0.88 + rng() * 0.24);
+    return {
+      cx: 50 + Math.cos(angle) * dist,
+      cy: 50 + Math.sin(angle) * dist,
+      rx,
+      ry,
+      ...palette,
+      rotation: rng() * 360,
+      highlightOffX: -rx * 0.2 + rng() * rx * 0.15,
+      highlightOffY: -ry * 0.35 + rng() * ry * 0.1,
+      id: `gem-${pitIndex}-${stoneIndex}`,
+    };
+  }
+
   let gems = $derived.by(() => {
     if (count === 0) return [];
 
-    const seed = pitIndex * 1000 + count * 7 + 42;
-    const rng = seededRandom(seed);
-
-    // Show close to real count — overlap/occlusion makes exact counting hard
+    // Determine how many gems to draw (visual approximation for large counts)
+    const countRng = seededRandom(pitIndex * 777 + 99);
     let visualCount: number;
     if (count <= 3) visualCount = count;
-    else if (count <= 6) visualCount = count - Math.floor(rng() * 2);
-    else if (count <= 10) visualCount = count - 1 - Math.floor(rng() * 2);
-    else if (count <= 16) visualCount = count - 2 - Math.floor(rng() * 3);
-    else if (count <= 24) visualCount = count - 3 - Math.floor(rng() * 3);
+    else if (count <= 6) visualCount = count - Math.floor(countRng() * 2);
+    else if (count <= 10) visualCount = count - 1 - Math.floor(countRng() * 2);
+    else if (count <= 16) visualCount = count - 2 - Math.floor(countRng() * 3);
+    else if (count <= 24) visualCount = count - 3 - Math.floor(countRng() * 3);
     else visualCount = Math.min(count - 4, 18);
 
     if (isStore) visualCount = Math.min(visualCount + 1, 20);
 
-    // Larger flat oval gems — ±15% size variation
-    const baseRx = isStore ? 17 : 17;
-    const baseRy = isStore ? 13 : 13;
     const maxSpread = isStore ? 38 : 32;
     const spread = Math.min(12 + count * 2.5, maxSpread);
 
     const result: Gem[] = [];
     for (let i = 0; i < visualCount; i++) {
-      const palette = gemPalette[Math.floor(rng() * gemPalette.length)];
-      const angle = rng() * Math.PI * 2;
-      // Minimum distance from center so gems spread out rather than clump
-      const minDist = count <= 2 ? 0 : spread * 0.25;
-      const dist = minDist + rng() * (spread - minDist);
-      const rx = baseRx * (0.88 + rng() * 0.24);
-      const ry = baseRy * (0.88 + rng() * 0.24);
-      result.push({
-        cx: 50 + Math.cos(angle) * dist,
-        cy: 50 + Math.sin(angle) * dist,
-        rx,
-        ry,
-        ...palette,
-        rotation: rng() * 360,
-        // Highlight offset — small shift from center for specular look
-        highlightOffX: -rx * 0.2 + rng() * rx * 0.15,
-        highlightOffY: -ry * 0.35 + rng() * ry * 0.1,
-        id: `gem-${pitIndex}-${i}`,
-      });
+      result.push(gemForIndex(i, spread, count));
     }
     return result;
   });

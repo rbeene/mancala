@@ -26,19 +26,27 @@
 
     <div class="vs-badge">VS</div>
 
-    <div class="player-card player-2" class:active={p2Active}>
-      <span class="player-score">{game.scores[1]}</span>
-      <span class="player-name">{p2Name}</span>
-      {#if game.thinking}
-        <span class="thinking-dots" aria-label="Computer is thinking">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </span>
-      {:else if game.mode === 'pvc'}
-        <span class="difficulty-badge">{game.difficulty}</span>
+    <div class="player-card-wrapper">
+      <div class="player-card player-2" class:active={p2Active}>
+        <span class="player-score">{game.scores[1]}</span>
+        <span class="player-name">{p2Name}</span>
+        {#if game.thinking}
+          <span class="thinking-dots" aria-label="Computer is thinking">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </span>
+        {:else if game.mode === 'pvc'}
+          <span class="difficulty-badge">{game.difficulty}</span>
+        {/if}
+        <span class="turn-dot"></span>
+      </div>
+
+      {#if game.commentary}
+        <div class="speech-bubble" role="status" aria-live="polite">
+          {game.commentary}
+        </div>
       {/if}
-      <span class="turn-dot"></span>
     </div>
   </div>
 
@@ -185,6 +193,47 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+  }
+
+  .player-card-wrapper {
+    position: relative;
+  }
+
+  .speech-bubble {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(91, 139, 212, 0.15);
+    border: 1px solid rgba(91, 139, 212, 0.25);
+    color: #A0C4F0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 12px;
+    white-space: nowrap;
+    z-index: 20;
+    animation: bubbleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(91, 139, 212, 0.25);
+  }
+
+  @keyframes bubbleIn {
+    0% { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.9); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
   }
 
   .thinking-dots {
