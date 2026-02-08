@@ -49,7 +49,9 @@
   .game-over-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,11 +60,24 @@
   }
 
   .game-over-card {
-    background: linear-gradient(160deg, #3E2B1A, #2C1D10);
+    background:
+      repeating-linear-gradient(
+        88deg,
+        transparent,
+        transparent 6px,
+        rgba(0, 0, 0, 0.03) 6px,
+        rgba(0, 0, 0, 0.03) 7px
+      ),
+      linear-gradient(160deg, #3E2B1A, #2C1D10, #3A2818);
     border-radius: 20px;
     padding: 48px 56px;
     text-align: center;
-    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5);
+    box-shadow:
+      0 20px 80px rgba(0, 0, 0, 0.6),
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 220, 140, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 220, 140, 0.06);
     animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 

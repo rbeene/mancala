@@ -23,35 +23,64 @@
   role="region"
   aria-label={label}
 >
-  <Stones count={count} pitIndex={pitIndex} isStore={true} />
+  <div class="store-inner">
+    <Stones count={count} pitIndex={pitIndex} isStore={true} />
+  </div>
   <span class="store-score" aria-hidden="true">{count}</span>
 </div>
 
 <style>
   .store {
-    width: var(--store-width, 90px);
-    height: var(--store-height, 200px);
-    border-radius: 45px;
-    background: #2C1810;
-    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.6),
-                inset 0 1px 3px rgba(0, 0, 0, 0.4);
+    width: var(--store-width, 96px);
+    height: var(--store-height, 210px);
+    border-radius: 48px;
+    /* Outer rim — carved wood edge */
+    background: radial-gradient(
+      ellipse at 45% 30%,
+      #6B5020 0%,
+      #5A4218 40%,
+      #4A3510 100%
+    );
+    box-shadow:
+      inset 0 2px 1px rgba(255, 220, 140, 0.12),
+      inset 0 -2px 1px rgba(0, 0, 0, 0.2),
+      0 3px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     flex-shrink: 0;
+    padding: 5px;
+  }
+
+  .store-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 44px;
+    background: radial-gradient(
+      ellipse at 50% 35%,
+      #3A2810 0%,
+      #2C1E0C 50%,
+      #1E1408 100%
+    );
+    box-shadow:
+      inset 0 8px 20px rgba(0, 0, 0, 0.6),
+      inset 0 3px 6px rgba(0, 0, 0, 0.4),
+      inset 0 -4px 8px rgba(80, 60, 20, 0.1);
+    position: relative;
+    overflow: hidden;
   }
 
   .store-score {
     position: absolute;
-    bottom: 12px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 1.5rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    color: rgba(232, 213, 176, 0.9);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
     z-index: 2;
     pointer-events: none;
   }
@@ -63,7 +92,8 @@
 
   @media (max-width: 480px) {
     .store-score {
-      font-size: 1.125rem;
+      font-size: 1.25rem;
+      bottom: 10px;
     }
   }
 </style>

@@ -15,15 +15,19 @@
 </script>
 
 <div class="game-header">
+  <h1 class="game-title">Mancala</h1>
+
   <div class="turn-indicator">
-    <div class="player-label player-1" class:active={p1Active}>
+    <div class="player-card player-1" class:active={p1Active}>
       <span class="turn-dot"></span>
       <span class="player-name">{p1Name}</span>
+      <span class="player-score">{game.scores[0]}</span>
     </div>
 
-    <span class="vs-divider">vs</span>
+    <div class="vs-badge">VS</div>
 
-    <div class="player-label player-2" class:active={p2Active}>
+    <div class="player-card player-2" class:active={p2Active}>
+      <span class="player-score">{game.scores[1]}</span>
       <span class="player-name">{p2Name}</span>
       {#if game.mode === 'pvc'}
         <span class="difficulty-badge">{game.difficulty}</span>
@@ -34,6 +38,7 @@
 
   {#if game.thinking}
     <div class="thinking-indicator" aria-label="Computer is thinking">
+      <span class="thinking-text">Thinking</span>
       <span class="dot"></span>
       <span class="dot"></span>
       <span class="dot"></span>
@@ -50,36 +55,88 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 16px 0;
+    gap: 12px;
+    padding: 20px 0;
+  }
+
+  .game-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(232, 213, 176, 0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0;
   }
 
   .turn-indicator {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
   }
 
-  .player-label {
+  .player-card {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+  }
+
+  .player-card.active {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .player-card.player-1.active {
+    border-color: rgba(212, 168, 67, 0.3);
+    box-shadow: 0 0 16px rgba(212, 168, 67, 0.08);
+  }
+
+  .player-card.player-2.active {
+    border-color: rgba(91, 139, 212, 0.3);
+    box-shadow: 0 0 16px rgba(91, 139, 212, 0.08);
+  }
+
+  .player-name {
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 1.125rem;
+    font-size: 1rem;
+    font-weight: 500;
     color: #8A7A6A;
     transition: color 0.3s ease;
   }
 
-  .player-label.active {
+  .player-card.active .player-name {
     font-weight: 700;
   }
 
-  .player-label.player-1.active {
+  .player-card.player-1.active .player-name {
     color: #D4A843;
   }
 
-  .player-label.player-2.active {
-    color: #5B8BD4;
+  .player-card.player-2.active .player-name {
+    color: #6B9FE0;
+  }
+
+  .player-score {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6B5D4D;
+    transition: color 0.3s ease;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .player-card.player-1.active .player-score {
+    color: #D4A843;
+  }
+
+  .player-card.player-2.active .player-score {
+    color: #6B9FE0;
   }
 
   .turn-dot {
@@ -88,52 +145,77 @@
     height: 8px;
     border-radius: 50%;
     background: transparent;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .player-label.active .turn-dot {
+  .player-card.active .turn-dot {
     background: currentColor;
-    animation: pulse 2s ease-in-out infinite;
+    animation: glow 2s ease-in-out infinite;
   }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 currentColor; }
-    50% { box-shadow: 0 0 0 4px transparent; }
+  .player-card.player-1.active .turn-dot {
+    color: #D4A843;
+    box-shadow: 0 0 6px rgba(212, 168, 67, 0.5);
   }
 
-  .vs-divider {
+  .player-card.player-2.active .turn-dot {
+    color: #6B9FE0;
+    box-shadow: 0 0 6px rgba(91, 139, 212, 0.5);
+  }
+
+  @keyframes glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .vs-badge {
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.875rem;
-    color: #6B5D4D;
-    font-style: italic;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #4A3D30;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .difficulty-badge {
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(91, 139, 212, 0.15);
-    color: #5B8BD4;
-    font-weight: 500;
-    text-transform: capitalize;
+    background: rgba(91, 139, 212, 0.12);
+    color: #6B9FE0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .thinking-indicator {
     display: inline-flex;
-    gap: 4px;
+    gap: 3px;
     align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(91, 139, 212, 0.08);
+  }
+
+  .thinking-text {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.75rem;
+    color: #6B9FE0;
+    margin-right: 4px;
   }
 
   .thinking-indicator .dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: #5B8BD4;
+    background: #6B9FE0;
     animation: thinkingPulse 1.2s ease-in-out infinite;
   }
 
-  .thinking-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+  .thinking-indicator .dot:nth-child(3) { animation-delay: 0.2s; }
+  .thinking-indicator .dot:nth-child(4) { animation-delay: 0.4s; }
 
   @keyframes thinkingPulse {
     0%, 100% { opacity: 0.3; transform: scale(0.8); }
@@ -153,8 +235,18 @@
   }
 
   @media (max-width: 480px) {
-    .player-label {
-      font-size: 0.9375rem;
+    .player-card {
+      padding: 6px 10px;
+      gap: 6px;
+    }
+    .player-name {
+      font-size: 0.875rem;
+    }
+    .player-score {
+      font-size: 1rem;
+    }
+    .game-title {
+      font-size: 1.125rem;
     }
   }
 </style>

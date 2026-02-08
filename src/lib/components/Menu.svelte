@@ -76,9 +76,23 @@
     width: 100%;
     margin: 10vh auto;
     padding: 48px 40px;
-    background: linear-gradient(160deg, #3E2B1A, #2C1D10);
+    background:
+      /* Wood grain overlay */
+      repeating-linear-gradient(
+        88deg,
+        transparent,
+        transparent 6px,
+        rgba(0, 0, 0, 0.03) 6px,
+        rgba(0, 0, 0, 0.03) 7px
+      ),
+      linear-gradient(160deg, #3E2B1A, #2C1D10, #3A2818);
     border-radius: 20px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    box-shadow:
+      0 16px 64px rgba(0, 0, 0, 0.5),
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 220, 140, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 220, 140, 0.06);
     text-align: center;
   }
 
@@ -89,13 +103,15 @@
     color: #E8D5B0;
     letter-spacing: 0.08em;
     margin: 0 0 4px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
   .game-subtitle {
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 1rem;
-    color: #A89070;
+    color: #8A7A6A;
     margin: 0 0 36px;
+    letter-spacing: 0.06em;
   }
 
   .mode-selector {
