@@ -42,12 +42,15 @@
 
   // Generate a stable gem for a given stone index — position depends only on
   // pitIndex and stoneIndex, so adding/removing stones doesn't rearrange others.
-  function gemForIndex(stoneIndex: number, spread: number, stoneCount: number): Gem {
+  // Uses fixed spread (maxSpread) so positions never change when count changes.
+  const fixedSpread = isStore ? 38 : 32;
+
+  function gemForIndex(stoneIndex: number): Gem {
     const rng = seededRandom(pitIndex * 1000 + stoneIndex * 13 + 42);
     const palette = gemPalette[Math.floor(rng() * gemPalette.length)];
     const angle = rng() * Math.PI * 2;
-    const minDist = stoneCount <= 2 ? 0 : spread * 0.25;
-    const dist = minDist + rng() * (spread - minDist);
+    const minDist = fixedSpread * 0.15;
+    const dist = minDist + rng() * (fixedSpread - minDist);
     const baseRx = 17;
     const baseRy = 13;
     const rx = baseRx * (0.88 + rng() * 0.24);
@@ -80,12 +83,9 @@
 
     if (isStore) visualCount = Math.min(visualCount + 1, 20);
 
-    const maxSpread = isStore ? 38 : 32;
-    const spread = Math.min(12 + count * 2.5, maxSpread);
-
     const result: Gem[] = [];
     for (let i = 0; i < visualCount; i++) {
-      result.push(gemForIndex(i, spread, count));
+      result.push(gemForIndex(i));
     }
     return result;
   });

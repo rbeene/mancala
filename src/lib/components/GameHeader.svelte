@@ -201,39 +201,57 @@
 
   .speech-bubble {
     position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(91, 139, 212, 0.15);
-    border: 1px solid rgba(91, 139, 212, 0.25);
-    color: #A0C4F0;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 12px;
+    top: 50%;
+    left: calc(100% + 20px);
+    transform: translateY(-50%);
+    background: #FFFEF5;
+    border: 3.5px solid #1A1209;
+    color: #1A1209;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    padding: 16px 26px;
+    border-radius: 28px;
     white-space: nowrap;
     z-index: 20;
-    animation: bubbleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: bubbleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
+    box-shadow: 4px 5px 0 #1A1209;
+    letter-spacing: 0.02em;
+    rotate: -1deg;
+  }
+
+  /* Comic tail — points left toward the computer card */
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 10px solid #FFFEF5;
   }
 
   .speech-bubble::before {
     content: '';
     position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 50%;
+    left: -15px;
+    transform: translateY(-50%);
     width: 0;
     height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid rgba(91, 139, 212, 0.25);
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-right: 14px solid #1A1209;
   }
 
   @keyframes bubbleIn {
-    0% { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.9); }
-    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    0% { opacity: 0; transform: translateY(-50%) translateX(8px) scale(0.8); }
+    50% { transform: translateY(-50%) translateX(-3px) scale(1.04); }
+    100% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1); }
   }
 
   .thinking-dots {
