@@ -57,6 +57,7 @@
     align-items: center;
     gap: 12px;
     padding: 20px 0;
+    position: relative;
   }
 
   .game-title {
@@ -191,12 +192,17 @@
   }
 
   .thinking-indicator {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
     display: inline-flex;
     gap: 3px;
     align-items: center;
     padding: 4px 12px;
     border-radius: 12px;
     background: rgba(91, 139, 212, 0.08);
+    z-index: 10;
   }
 
   .thinking-text {
