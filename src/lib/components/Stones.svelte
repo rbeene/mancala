@@ -3,10 +3,14 @@
 
   function seededRandom(seed: number): () => number {
     let s = seed;
-    return () => {
+    const next = () => {
       s = (s * 16807 + 0) % 2147483647;
       return (s - 1) / 2147483646;
     };
+    // Warm up: small seeds produce near-zero first outputs, causing all
+    // stones to pick the same palette entry. A few iterations decorrelate.
+    next(); next(); next();
+    return next;
   }
 
   // Varied glass gem colors — mixed hues so individual stones are distinguishable
