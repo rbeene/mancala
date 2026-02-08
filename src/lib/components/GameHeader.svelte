@@ -29,21 +29,18 @@
     <div class="player-card player-2" class:active={p2Active}>
       <span class="player-score">{game.scores[1]}</span>
       <span class="player-name">{p2Name}</span>
-      {#if game.mode === 'pvc'}
+      {#if game.thinking}
+        <span class="thinking-dots" aria-label="Computer is thinking">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+      {:else if game.mode === 'pvc'}
         <span class="difficulty-badge">{game.difficulty}</span>
       {/if}
       <span class="turn-dot"></span>
     </div>
   </div>
-
-  {#if game.thinking}
-    <div class="thinking-indicator" aria-label="Computer is thinking">
-      <span class="thinking-text">Thinking</span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
-  {/if}
 
   <div aria-live="polite" aria-atomic="true" class="sr-only">
     {turnAnnouncement}
@@ -57,7 +54,6 @@
     align-items: center;
     gap: 12px;
     padding: 20px 0;
-    position: relative;
   }
 
   .game-title {
@@ -191,28 +187,14 @@
     letter-spacing: 0.05em;
   }
 
-  .thinking-indicator {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+  .thinking-dots {
     display: inline-flex;
     gap: 3px;
     align-items: center;
-    padding: 4px 12px;
-    border-radius: 12px;
-    background: rgba(91, 139, 212, 0.08);
-    z-index: 10;
+    padding: 2px 4px;
   }
 
-  .thinking-text {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.75rem;
-    color: #6B9FE0;
-    margin-right: 4px;
-  }
-
-  .thinking-indicator .dot {
+  .thinking-dots .dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
@@ -220,8 +202,8 @@
     animation: thinkingPulse 1.2s ease-in-out infinite;
   }
 
-  .thinking-indicator .dot:nth-child(3) { animation-delay: 0.2s; }
-  .thinking-indicator .dot:nth-child(4) { animation-delay: 0.4s; }
+  .thinking-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dots .dot:nth-child(3) { animation-delay: 0.4s; }
 
   @keyframes thinkingPulse {
     0%, 100% { opacity: 0.3; transform: scale(0.8); }
